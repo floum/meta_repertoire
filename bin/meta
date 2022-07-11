@@ -1,5 +1,48 @@
 #!/usr/bin/env ruby
+require 'yaml'
+require 'pgn'
+require 'net/http'
+require 'json'
 
-p "META"
+repertoire_config = YAML.load(File.read(ARGV[0]))
 
+p repertoire_config
 
+ENDPOINT = "https://explorer.lichess.ovh/masters"
+
+lines = repertoire_config['lines']
+
+p lines
+
+class Repertoire
+  def initialize(color)
+    @color = color
+    @lines = []
+  end
+
+  def add_line(line)
+    @lines << PGN::Game.new(line.split(' '))   
+  end
+
+  def inspect
+    "Color : #{@color}\n" <<
+    "Lines : "
+  end
+end
+
+repertoire = Repertoire.new(repertoire_config['color'])
+
+lines.each do |line,
+
+class FENReport
+  def initialize(fen, total=0)
+    @fen = fen
+    @total = total
+  end
+
+  def inspect
+    "fen : #{@fen} | Played #{@total} times | "
+  end
+end
+
+p repertoire

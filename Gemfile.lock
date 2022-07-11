@@ -7,6 +7,8 @@ GEM
   remote: https://rubygems.org/
   specs:
     diff-lcs (1.3)
+    pgn (0.3.0)
+      whittle
     rake (10.5.0)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
@@ -21,6 +23,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.2)
+    whittle (0.0.8)
 
 PLATFORMS
   ruby
@@ -28,6 +31,7 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 2.0)
   meta_repertoire!
+  pgn
   rake (~> 10.0)
   rspec (~> 3.0)
 
