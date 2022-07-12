@@ -4,45 +4,103 @@ require 'pgn'
 require 'net/http'
 require 'json'
 
-repertoire_config = YAML.load(File.read(ARGV[0]))
-
-p repertoire_config
 
 ENDPOINT = "https://explorer.lichess.ovh/masters"
 
-lines = repertoire_config['lines']
-
-p lines
+STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
 class Repertoire
-  def initialize(color)
-    @color = color
-    @lines = []
+  attr_reader :lines, :result
+
+  def initialize(config)
+    @color = config['color']
+    @game_count = config['games']
+    @lines = config['lines']
+    @repertoire_fens = []
   end
 
-  def add_line(line)
-    @lines << PGN::Game.new(line.split(' '))   
+  def compute
+    game = PGN::Game.new(@lines.first.split(' '))
+    fen = game.fen_list.last
+    subtree = Subtree.new(fen, @game_count)
+    subtree.lines.each do |line|
+      line.count.times do
+        repertoire_fens << line.resulting_fen
+      end
+    end
   end
 
   def inspect
-    "Color : #{@color}\n" <<
-    "Lines : "
+    "#{@repertoire_fens}"
+  end
+
+  def opponent_move?(fen)
+
   end
 end
 
-repertoire = Repertoire.new(repertoire_config['color'])
-
-lines.each do |line,
-
-class FENReport
-  def initialize(fen, total=0)
+class Move
+  attr_reader :count, :san
+  def initialize(fen, san, count)
+    @count = count
     @fen = fen
-    @total = total
+    @san = san
+  end
+
+  def fen_result
+    fen = PGN::FEN.new(@fen)
+    position = fen.to_position
+    position.move(@san).to_fen
   end
 
   def inspect
-    "fen : #{@fen} | Played #{@total} times | "
+    "#{@san}"
   end
 end
 
+class Subtree
+  def initialize(fen, game_count)
+    @fen = fen
+    @game_count = game_count.to_f
+    lichess_data = JSON.load(Net::HTTP.get(URI.parse("#{ENDPOINT}?fen=#{@fen}")))
+    @total_game_count = lichess_data['white'] + lichess_data['draws'] + lichess_data['black']
+    @moves = lichess_data['moves'].map do |move_info|
+      Move.new(@fen, move_info['san'], move_info['white'] + move_info['draws'] + move_info['black'])
+    end
+  end
+
+  def threshold
+    @total_game_count / @game_count
+  end
+
+  def relevant_moves 
+    @moves.select {|move| move.count > threshold }
+  end
+
+  def inspect
+    "#{@fen} |\n" <<
+    "Lines : #{lines}"
+  end
+
+  def lines
+    relevant_moves.map do |move|
+      {
+        "move": move,
+        "count": (move.count / threshold).round
+      }
+    end
+  end
+end
+
+class SubtreeLine
+  def initialize
+    @moves = moves
+
+  end
+end
+
+repertoire_config = YAML.load(File.read(ARGV[0]))
+repertoire = Repertoire.new(repertoire_config)
+
+repertoire.compute
 p repertoire
