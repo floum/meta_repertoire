@@ -20,25 +20,25 @@ module MetaRepertoire
       @game_count = game_count
       lichess_data = JSON.load(Net::HTTP.get(URI.parse("#{ENDPOINT}?fen=#{@fen}")))
       @lichess_size = lichess_data['white'] + lichess_data['draws'] + lichess_data['black']
-      @lichess_responses = lichess_data['moves'-].map do |move_info|
+      @lichess_responses = lichess_data['moves'].map do |move_info|
         KnownMove.new(@fen, move_info['san'], move_info['white'] + move_info['draws'] + move_info['black'])
       end
       @subtrees = []
     end
   end
 
-  def build_subtrees
+  def build_subtrees(repertoire)
     return if @game_count == 1
     _responses = @lichess_responses
     responses = []
-    while responses.size < @game_count
+    while responses.size < @game_count do
       _responses.sort_by!(&:count).reverse
       responses << _responses.first
       _responses.first.count -= move_count_reduction
     end
-    responses.group_by(&:self).map{|key, item| [key, item.count]}.each{|move, count|}
-      if @known_positions.map(&:fen).include?(move.resulting_fen)
-        @subtrees << Subtree.new(, )
+    responses.group_by(&:self).map{|key, item| [key, item.count]}.each do |move, count|
+      if repertoire.known_fens.include?(move.resulting_fen)
+        @subtrees << Subtree.new(repertoire.answer(move.resulting_fen),count)
       else
         @subtrees << NullSubtree.new(@moves << move)
       end

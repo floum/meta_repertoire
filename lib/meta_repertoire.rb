@@ -1,3 +1,5 @@
+require 'pgn'
+
 require "meta_repertoire/version"
 require "meta_repertoire/line"
 require "meta_repertoire/move"
