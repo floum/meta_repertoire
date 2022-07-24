@@ -5,9 +5,13 @@ require 'net/http'
 require 'json'
 
 require 'meta_repertoire'
+include MetaRepertoire
 
 repertoire_config = YAML.load(File.read(ARGV[0]))
-repertoire = Repertoire.new(repertoire_config['color'], repertoire_config['lines'], repertoire_config['games'])
+repertoire = Repertoire.new(
+  repertoire_config['color'],
+  repertoire_config['lines'],
+  repertoire_config['games']
+)
 
-repertoire.build_lines
-p repertoire.lines.first
+p repertoire.subtrees

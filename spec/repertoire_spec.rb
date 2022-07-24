@@ -9,4 +9,8 @@ RSpec.describe Repertoire do
     expect(subject.answer(modern_defense)).to eq Move.new(modern_defense, 'c4')
     expect(subject.answer(classical_defense)).to eq Move.new(classical_defense, 'c4')
   end
+
+  it 'manages the game count for a fen' do
+    expect(subject.game_count(starting_fen, 20).map{|k,v| v}.reduce(:+)).to eq 20
+  end
 end
