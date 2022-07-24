@@ -16,7 +16,6 @@ module MetaRepertoire
 
     def parse_lines(lines)
       lines.each do |line|
-        p line
         moves = line.split(' ')
         game = PGN::Game.new(moves)
         fens = game.fen_list
