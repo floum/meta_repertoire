@@ -11,7 +11,8 @@ repertoire_config = YAML.load(File.read(ARGV[0]))
 repertoire = Repertoire.new(
   repertoire_config['color'],
   repertoire_config['lines'],
-  repertoire_config['games']
+  repertoire_config['games'],
+  LichessDB.new('lichess.sqlite3')
 )
 
 repertoire.compute_lines

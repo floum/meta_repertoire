@@ -1,10 +1,10 @@
 module MetaRepertoire
   class LichessFENData
-    ENDPOINT = "https://explorer.lichess.ovh/masters"
     attr_reader :fen
 
-    def initialize(fen)
+    def initialize(fen, lichess_db)
       @fen = fen
+      @lichess_db = lichess_db
     end
 
     def size
@@ -20,8 +20,7 @@ module MetaRepertoire
     private
 
     def fetch
-      sleep 0.5
-      lichess_data = JSON.load(Net::HTTP.get(URI.parse("#{ENDPOINT}?fen=#{fen}")))
+      lichess_data = @lichess_db.fetch(@fen)
       @size = lichess_data['white'] + lichess_data['draws'] + lichess_data['black']
       @responses = []
       lichess_data['moves'].each do |move_info|

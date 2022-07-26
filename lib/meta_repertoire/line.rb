@@ -20,7 +20,7 @@ module MetaRepertoire
 
     def compute_sublines
       return if @size <= 2
-      line_sizes = LineSizeCalculator.new(@fen, @size).compute
+      line_sizes = LineSizeCalculator.new(@fen, @size, @repertoire.lichess_db).compute
       line_sizes.each do |move, size|
         if @repertoire.answer(move)
           @sublines << Line.new(@moves.dup << move << @repertoire.answer(move), size, @repertoire)

@@ -1,12 +1,13 @@
 module MetaRepertoire
   class LineSizeCalculator
-    def initialize(fen, size)
+    def initialize(fen, size, lichess_db)
       @fen = fen
       @size = size
+      @lichess_db = lichess_db
     end
 
     def compute
-      lichess = LichessFENData.new(@fen)
+      lichess = LichessFENData.new(@fen, @lichess_db)
       _responses = lichess.responses
       _result = []
       @size.times do |i|
