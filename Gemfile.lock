@@ -2,6 +2,8 @@ PATH
   remote: .
   specs:
     meta_repertoire (0.1.0)
+      pgn
+      sqlite
 
 GEM
   remote: https://rubygems.org/
@@ -23,6 +25,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.2)
+    sqlite (1.0.2)
     whittle (0.0.8)
 
 PLATFORMS
@@ -31,7 +34,6 @@ PLATFORMS
 DEPENDENCIES
   bundler (~> 2.0)
   meta_repertoire!
-  pgn
   rake (~> 10.0)
   rspec (~> 3.0)
 

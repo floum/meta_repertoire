@@ -1,50 +1,66 @@
 module MetaRepertoire
   class Repertoire
-    attr_reader :lines
-    def initialize(color, lines, size)
+    STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
+
+    attr_reader :lines, :answers
+
+    def initialize(color, known_lines, size)
       @color = color
       @lines = []
       @size = size
-      parse_lines(lines)
+      @answers = {}
+      parse_answers(known_lines)
     end
 
-    def answer(fen)
-      line = @lines.find{|line| line.moves.map(&:fen).include?(fen)}
-      line.moves.find{|move| move.fen == fen} if line
+    def pretty_print
+      "#{@color} Repertoire (#{@size} games)\n" <<
+      @lines.map(&:pretty_print).join("\n")
     end
 
-    def own_moves
-      @lines.map(&:moves).select{|move| move.color == @color}
-    end
-
-    def starting_line
+    def initial_fen
       if @color == 'white'
-        @lines.first.first(1)
+        @answers[STARTING_FEN].resulting_fen
       else
-        Line.new([])
+        STARTING_FEN
       end
     end
 
-    def subtrees
-      SubtreeCalculator.new(starting_line, @size).compute.map do |subtree|
-        if answer(subtree.line.fen)
-          Subtree.new(subtree.line + answer(subtree.line.fen), subtree.size)
+    def initial_moves
+      if @color == 'white'
+        [@answers[STARTING_FEN]]
+      else
+        []
+      end
+    end
+
+    def answer(move)
+      @answers[move.resulting_fen]
+    end
+
+    def compute_lines
+      line_sizes = LineSizeCalculator.new(initial_fen, @size).compute
+      line_sizes.each do |move, size|
+        if answer(move)
+          @lines << Line.new(initial_moves << move << answer(move), size, self)
         else
-          NullSubtree.new(subtree.line)
+          @lines << NullLine.new(initial_moves << move, size, self)
         end
+      end
+      @lines.each do |line|
+        line.compute_sublines
       end
     end
 
     private
 
-    def parse_lines(lines)
-      lines.each do |line|
+    def parse_answers(known_lines)
+      known_lines.each do |line|
         moves = line.split(' ')
         game = PGN::Game.new(moves)
-        fens = game.fen_list
-        _moves = fens[0..-2].zip(moves).map {|fen, move| Move.new(fen, move)}
-        line = Line.new(_moves)
-        @lines << line
+        fens = game.fen_list.map(&:to_s)[0..-2].zip(moves).each do |fen, move|
+          _move = Move.new(fen, move)
+          @answers[fen]= _move if _move.color == @color
+        end
       end
     end
   end

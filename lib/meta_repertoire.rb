@@ -1,6 +1,7 @@
 require 'json'
 require 'net/http'
 require 'pgn'
+require 'sqlite3'
 
 require "meta_repertoire/version"
 require 'meta_repertoire/line_size_calculator'

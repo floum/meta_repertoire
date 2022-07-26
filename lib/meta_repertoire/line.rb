@@ -1,40 +1,49 @@
 module MetaRepertoire
   class Line
-    attr_reader :moves
-
-    def initialize(moves)
+    def initialize(moves, size, repertoire)
       @moves = moves
+      @fen = moves.last.resulting_fen
+      @repertoire = repertoire
+      @size = size
+      @sublines = []
+      compute_sublines
     end
 
-    def first(n)
-      Line.new(@moves.first(n))
+    def inspect
+      "Line: #{@moves} | size: #{@size} | Sublines: #{@sublines}"
     end
 
-    def +(move)
-      Line.new(@moves << move)
+    def pretty_print
+      "#{@moves.map(&:san).join(' ')} | #{@size} games \n" << 
+      @sublines.map(&:pretty_print).join("\n")
     end
 
-    def lichess_responses
-      lichess_data.responses
+    def compute_sublines
+      return if @size <= 2
+      line_sizes = LineSizeCalculator.new(@fen, @size).compute
+      line_sizes.each do |move, size|
+        if @repertoire.answer(move)
+          @sublines << Line.new(@moves.dup << move << @repertoire.answer(move), size, @repertoire)
+        else
+          @sublines << NullLine.new(@moves.dup << move, size, @repertoire)
+        end
+      end
+    end
+  end
+
+  class NullLine < Line
+    def initialize(moves, size, repertoire)
+      @moves = moves
+      @size = size
+      p "  - #{@moves.map(&:san).join(' ')} | size: #{@size}" if @size > 1
+      @sublines = []
     end
 
-    def lichess_size
-      lichess_data.size
+    def inspect
+      "<SeveredLine: #{@moves} | size: #{@size}>"
     end
 
-    def subline_sizes(count)
-      lsc = LineSizeCalculator(final_fen, count)
+    def compute_sublines
     end
-
-    def fen
-      @moves.last.resulting_fen
-    end
-
-    private
-
-    def lichess_data
-      @lichess_data ||= LichessFENData.new(fen)
-    end
-
   end
 end

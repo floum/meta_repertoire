@@ -20,6 +20,7 @@ module MetaRepertoire
     private
 
     def fetch
+      sleep 0.5
       lichess_data = JSON.load(Net::HTTP.get(URI.parse("#{ENDPOINT}?fen=#{fen}")))
       @size = lichess_data['white'] + lichess_data['draws'] + lichess_data['black']
       @responses = []

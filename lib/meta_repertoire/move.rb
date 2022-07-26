@@ -8,15 +8,20 @@ module MetaRepertoire
     end
 
     def inspect
-      "#{@fen} | #{@san}"
+      "#{@san}"
     end
+
+    def to_s
+      "#{@san}"
+    end
+
 
     def ==(other)
       other.fen == fen && other.san == san
     end
 
     def color
-      @fen.split(' ')[0] == 'w' ? 'white' : 'black'
+      @fen.split(' ')[1] == 'w' ? 'white' : 'black'
     end
   end
 

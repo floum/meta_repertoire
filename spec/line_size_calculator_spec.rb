@@ -1,5 +1,5 @@
-RSpec.describe LineSizeCalculator do
+RSpec.describe SubtreeCalculator do
   let(:line) do
-    lichess_data = Lichess
+    skip
   end
 end
