@@ -5,7 +5,6 @@ module MetaRepertoire
     attr_reader :lines, :answers, :lichess_db
 
     def initialize(options)
-      p options
       @color = options.fetch('color') { 'white' }
       @lines = []
       @size = options.fetch('size') { 50 }
