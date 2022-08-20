@@ -2,9 +2,9 @@ module MetaRepertoire
   class LichessFENData
     attr_reader :fen
 
-    def initialize(fen, lichess_db)
+    def initialize(fen, lichess_config)
       @fen = fen
-      @lichess_db = lichess_db
+      @lichess_config = lichess_config
     end
 
     def size
@@ -20,7 +20,7 @@ module MetaRepertoire
     private
 
     def fetch
-      lichess_data = @lichess_db.fetch(@fen)
+      lichess_data = @lichess_config.fetch(@fen)
       @size = lichess_data['white'] + lichess_data['draws'] + lichess_data['black']
       @responses = []
       lichess_data['moves'].each do |move_info|

@@ -4,17 +4,18 @@ module MetaRepertoire
 
     attr_reader :lines, :answers, :lichess_db
 
-    def initialize(color, known_lines, size, lichess_db)
-      @color = color
+    def initialize(options)
+      p options
+      @color = options.fetch('color') { 'white' }
       @lines = []
-      @size = size
-      @lichess_db = lichess_db
+      @size = options.fetch('size') { 50 }
+      lichess_config = LichessConfig.new(options)
+      @lichess_db = LichessDB.new(lichess_config.db, lichess_config.endpoint)
       @answers = {}
-      parse_answers(known_lines)
+      parse_answers(options.fetch('lines') { [] })
     end
 
     def pretty_print
-      "#{@color} Repertoire (#{@size} games)\n" <<
       @lines.map(&:pretty_print).join("\n")
     end
 
@@ -46,9 +47,6 @@ module MetaRepertoire
         else
           @lines << NullLine.new(initial_moves << move, size, self)
         end
-      end
-      @lines.each do |line|
-        line.compute_sublines
       end
     end
 

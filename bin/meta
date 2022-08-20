@@ -3,18 +3,35 @@ require 'yaml'
 require 'pgn'
 require 'net/http'
 require 'json'
+require 'pry'
+require 'thor'
 
 require 'meta_repertoire'
 include MetaRepertoire
 
-repertoire_config = YAML.load(File.read(ARGV[0]))
-repertoire = Repertoire.new(
-  repertoire_config['color'],
-  repertoire_config['lines'],
-  repertoire_config['games'],
-  LichessDB.new('lichess.sqlite3')
-)
 
-repertoire.compute_lines
 
-print repertoire.pretty_print
+class MetaRepertoireCLI < Thor
+  desc "meta", "build a meta repertoire"
+  option :level, default: 2500, type: :numeric
+  option :color, default: 'white'
+  option :tendency, default: 'win'
+  option :size, default: 50, type: :numeric
+  def meta
+    repertoire = MetaRepertoire::MetaRepertoire.new(options)
+    repertoire.compute_lines
+    print repertoire.pretty_print
+  end
+
+  desc "repertoire YAML", "build a repertoire from YAML"
+  option :lichess, default: 'masters'
+  def repertoire(yaml)
+    opts = options.merge(YAML.load(File.read(yaml)))
+    repertoire = Repertoire.new(opts)
+    repertoire.compute_lines
+
+    print repertoire.pretty_print
+  end
+end
+
+MetaRepertoireCLI.start(ARGV)

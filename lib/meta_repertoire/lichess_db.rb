@@ -1,8 +1,7 @@
 module MetaRepertoire
   class LichessDB
-    ENDPOINT = "https://explorer.lichess.ovh/masters"
-
-    def initialize(filename)
+    def initialize(filename, endpoint)
+      @endpoint = endpoint
       @db = SQLite3::Database.new filename
       @db.execute <<-SQL
         create table if not exists fen_datas(
@@ -17,7 +16,7 @@ module MetaRepertoire
       if found = result.next
         json = JSON.load(found[1])
       else
-        response = Net::HTTP.get(URI.parse("#{ENDPOINT}?fen=#{fen}"))
+        response = Net::HTTP.get(URI.parse("#{@endpoint}?fen=#{fen}"))
         statement = @db.prepare("INSERT INTO fen_datas (fen, lichess_response) VALUES (:fen, :json)")
         statement.execute([fen, response])
         json = JSON.load(response)
