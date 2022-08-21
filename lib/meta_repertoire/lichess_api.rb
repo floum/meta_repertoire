@@ -7,7 +7,9 @@ module MetaRepertoire
     end
 
     def fetch(fen)
-      Net::HTTP.get(URI.parse("#{@endpoint}?fen=#{fen}"))
+      uri = "#{@endpoint}?fen=#{fen}"
+      uri << "&ratings=#{@level}" unless @level == 'masters'
+      Net::HTTP.get(URI.parse(uri))
     end
   end
 end

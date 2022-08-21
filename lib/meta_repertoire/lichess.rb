@@ -24,7 +24,7 @@ module MetaRepertoire
         statement.execute([fen, response])
         json = JSON.load(response)
       end
-      json
+      LichessFEN.new(fen, json)
     end
   end
 end

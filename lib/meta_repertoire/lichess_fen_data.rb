@@ -17,10 +17,6 @@ module MetaRepertoire
       @responses
     end
 
-    def meta_move
-      @responses.sort_by(&:expected_value).last
-    end
-
     private
 
     def fetch
@@ -28,7 +24,7 @@ module MetaRepertoire
       @size = lichess_data['white'] + lichess_data['draws'] + lichess_data['black']
       @responses = []
       lichess_data['moves'].each do |move_info|
-        @responses << LichessMove.new(@fen, move_info['san'], move_info['white'], move_info['black'], move_info['draws'])
+        @responses << LichessMove.new(@fen, move_info)
       end
     end
   end
@@ -36,12 +32,12 @@ module MetaRepertoire
   class LichessMove
     attr_reader :size, :move
     attr_accessor :size
-    def initialize(fen, san, white_wins, black_wins, draws)
-      @move = Move.new(fen, san)
-      @white_wins = white_wins
-      @black_wins = black_wins
-      @draws = draws
-      @size = white_wins + draws + black_wins
+    def initialize(fen, data)
+      @move = Move.new(fen, data['san'])
+      @white_wins = data['white']
+      @black_wins = data['black']
+      @draws = data['draws']
+      @size = @white_wins + @draws + @black_wins
     end
 
     def inspect

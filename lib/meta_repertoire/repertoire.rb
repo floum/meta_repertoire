@@ -2,13 +2,13 @@ module MetaRepertoire
   class Repertoire
     STARTING_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 
-    attr_reader :lines, :answers, :lichess_db
+    attr_reader :lines, :answers, :lichess
 
     def initialize(options)
       @color = options.fetch('color') { 'white' }
       @lines = []
       @size = options.fetch('size') { 50 }
-      @lichess_db = Lichess.new(options)
+      @lichess = Lichess.new(options)
       @answers = {}
       parse_answers(options.fetch('lines') { [] })
     end
@@ -38,7 +38,7 @@ module MetaRepertoire
     end
 
     def compute_lines
-      line_sizes = LineSizeCalculator.new(initial_fen, @size, @lichess_db).compute
+      line_sizes = LineSizeCalculator.new(initial_fen, @size, @lichess).compute
       line_sizes.each do |move, size|
         if answer(move)
           @lines << Line.new(initial_moves << move << answer(move), size, self)
