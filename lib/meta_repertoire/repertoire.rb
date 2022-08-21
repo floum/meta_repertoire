@@ -8,8 +8,7 @@ module MetaRepertoire
       @color = options.fetch('color') { 'white' }
       @lines = []
       @size = options.fetch('size') { 50 }
-      lichess_config = LichessConfig.new(options)
-      @lichess_db = LichessDB.new(lichess_config.db, lichess_config.endpoint)
+      @lichess_db = Lichess.new(options)
       @answers = {}
       parse_answers(options.fetch('lines') { [] })
     end

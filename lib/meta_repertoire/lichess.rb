@@ -1,0 +1,31 @@
+module MetaRepertoire
+  class Lichess
+    def initialize(options)
+      @level = options.fetch('level') { 'masters' }
+      @db_filename = "lichess_#{@level}.sqlite3"
+      @db = SQLite3::Database.new @db_filename
+      @db.execute <<-SQL
+        create table if not exists fen_datas(
+          fen varchar(40),
+          lichess_response varchar(1000),
+          created_at text
+        );
+      SQL
+      @api = LichessAPI.new(options)
+    end
+
+    def fetch(fen)
+      result = @db.query('SELECT * FROM fen_datas WHERE fen=?', [fen])
+      if found = result.next
+        json = JSON.load(found[1])
+      else
+        fen = @api.fetch(fen)
+        response = Net::HTTP.get(URI.parse("#{@api.endpoint}?fen=#{fen}"))
+        statement = @db.prepare("INSERT INTO fen_datas (fen, lichess_response) VALUES (:fen, :json, :created_at)")
+        statement.execute([fen, response])
+        json = JSON.load(response)
+      end
+      json
+    end
+  end
+end

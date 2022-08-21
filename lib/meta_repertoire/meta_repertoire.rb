@@ -2,7 +2,7 @@ module MetaRepertoire
   class MetaRepertoire < Repertoire
     def initialize(options)
       super
-      @tendency = options.fetch('tendency') { 'win' }
+      @lichess = Lichess.new(options)
     end
 
     def pretty_print
@@ -10,11 +10,12 @@ module MetaRepertoire
     end
 
     def initial_fen
-      meta_move(STARTING_FEN).resulting_fen
+      return STARTING_FEN if @color == 'black'
+      @lichess.fetch(STARTING_FEN).meta_move.resulting_fen
     end
 
     def meta_move(fen)
-      @lichess_db.meta_move(fen)
+      @lichess.meta_move(fen)
     end
   end
 end

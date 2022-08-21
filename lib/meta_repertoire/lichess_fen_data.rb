@@ -28,12 +28,12 @@ module MetaRepertoire
       @size = lichess_data['white'] + lichess_data['draws'] + lichess_data['black']
       @responses = []
       lichess_data['moves'].each do |move_info|
-        @responses << LichessResponse.new(@fen, move_info['san'], move_info['white'], move_info['black'], move_info['draws'])
+        @responses << LichessMove.new(@fen, move_info['san'], move_info['white'], move_info['black'], move_info['draws'])
       end
     end
   end
 
-  class LichessResponse
+  class LichessMove
     attr_reader :size, :move
     attr_accessor :size
     def initialize(fen, san, white_wins, black_wins, draws)
