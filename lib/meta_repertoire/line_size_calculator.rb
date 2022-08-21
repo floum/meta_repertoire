@@ -10,6 +10,7 @@ module MetaRepertoire
       lichess_fen = @lichess.fetch(@fen)
       _responses = lichess_fen.moves
       _result = []
+      return _result if _responses.empty?
       @size.times do |i|
         _result << _responses.sort_by!(&:size).last.move
         _responses.last.size -= _responses.map(&:size).reduce(:+) / (@size - i + 1)

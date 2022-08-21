@@ -39,6 +39,14 @@ module MetaRepertoire
       @draws = data['draws']
       @size = @white_wins + @draws + @black_wins
     end
+    
+    def resulting_fen
+      @move.resulting_fen
+    end
+
+    def san
+      @move.san
+    end
 
     def inspect
       "#{@move} | 1-0: #{@white_wins}, 1/2-1/2: #{@draws}, 0-1: #{@black_wins} | Total: #{@size}"
@@ -49,7 +57,7 @@ module MetaRepertoire
     end
 
     def expected_value
-      @move.color == 'white' ? (@white_wins + @draws / 2).to_f / @size : (@black_wins + @draws / 2).to_d / @size
+      @move.color == 'white' ? (@white_wins + @draws / 2).to_f / @size : (@black_wins + @draws / 2).to_f / @size
     end
   end
 end

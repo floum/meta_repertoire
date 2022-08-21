@@ -20,9 +20,9 @@ module MetaRepertoire
         json = JSON.load(found[1])
       else
         response = @api.fetch(fen)
+        json = JSON.load(response)
         statement = @db.prepare("INSERT INTO fen_datas (fen, lichess_response) VALUES (:fen, :json)")
         statement.execute([fen, response])
-        json = JSON.load(response)
       end
       LichessFEN.new(fen, json)
     end

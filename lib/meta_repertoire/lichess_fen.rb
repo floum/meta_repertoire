@@ -12,8 +12,8 @@ module MetaRepertoire
       end
     end
 
-    def meta_move(tendency)
-      @moves.sort_by(&:value)
+    def meta_move
+      @moves.sort_by(&:expected_value).last
     end
   end
 end

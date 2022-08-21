@@ -38,13 +38,17 @@ module MetaRepertoire
     end
 
     def compute_lines
-      line_sizes = LineSizeCalculator.new(initial_fen, @size, @lichess).compute
-      line_sizes.each do |move, size|
-        if answer(move)
-          @lines << Line.new(initial_moves << move << answer(move), size, self)
-        else
-          @lines << NullLine.new(initial_moves << move, size, self)
+      begin
+        line_sizes = LineSizeCalculator.new(initial_fen, @size, @lichess).compute
+        line_sizes.each do |move, size|
+          if answer(move)
+            @lines << Line.new(initial_moves << move << answer(move), size, self)
+          else
+            @lines << NullLine.new(initial_moves << move, size, self)
+          end
         end
+      rescue StandardError => e
+        p e.message
       end
     end
 
