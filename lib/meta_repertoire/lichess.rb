@@ -19,9 +19,8 @@ module MetaRepertoire
       if found = result.next
         json = JSON.load(found[1])
       else
-        fen = @api.fetch(fen)
-        response = Net::HTTP.get(URI.parse("#{@api.endpoint}?fen=#{fen}"))
-        statement = @db.prepare("INSERT INTO fen_datas (fen, lichess_response) VALUES (:fen, :json, :created_at)")
+        response = @api.fetch(fen)
+        statement = @db.prepare("INSERT INTO fen_datas (fen, lichess_response) VALUES (:fen, :json)")
         statement.execute([fen, response])
         json = JSON.load(response)
       end
