@@ -9,8 +9,7 @@ module MetaRepertoire
     def fetch(fen)
       uri = "#{@endpoint}?fen=#{fen}"
       uri << "&ratings=#{@level}" unless @level == 'masters'
-      p "URI: #{uri}"
-      sleep 0.5
+      sleep 0.2
       Net::HTTP.get(URI.parse(uri))
     end
   end

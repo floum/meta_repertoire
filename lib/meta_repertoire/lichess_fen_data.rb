@@ -44,6 +44,10 @@ module MetaRepertoire
       @move.resulting_fen
     end
 
+    def to_s
+      san
+    end
+
     def san
       @move.san
     end
